@@ -125,7 +125,7 @@ package 'Final_Interceptor_Architecture' {
         }
     }
 
-    // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
     // 4. INTEGRATED SYSTEM (The Product)
     // -------------------------------------------------------------------------
 
@@ -140,13 +140,14 @@ package 'Final_Interceptor_Architecture' {
         // --- CONNECTIVITY ---
         
         // Flow: Sensor -> Estimator -> Guidance -> Plant
-        // The PACE Manager sits on top, gating the signals.
-        
         connect sensor_suite.raw_data to estimator.input;
         
-        // The Guidance block receives State from Estimator
-        // BUT, the PACE Manager tells the Plant *which* command to listen to.
+        // The Estimator feeds the Guidance Law
+        // (Assuming Guidance accepts TargetState)
+        // connect estimator.output to guidance.input; 
         
+        // ARBITRATION LOGIC (The Mixer)
+        // This action selects the correct servo command based on the active mode.
         action arbitration {
             in mode : PACE_Mode = computer.active_mode;
             in nav_sol : AngleValue = guidance.fin_cmd;
@@ -154,13 +155,15 @@ package 'Final_Interceptor_Architecture' {
             
             out final_servo_cmd : AngleValue;
             
-            // Mixing Logic
-            // Psuedocode for the arbitration action:
-            // if (mode == Primary_Intercept) final_servo_cmd = nav_sol;
-            // else if (mode == Alternate_Coast) final_servo_cmd = coast_sol; // Use prediction
-            // else final_servo_cmd = 0 [deg]; // Neutral or Loiter bank
+            // SysML v2 Binding Logic (Simplified for readability)
+            // In a real compiler, this would use a 'bind' statement or 'calc'
+            binding final_servo_cmd = 
+                if mode == PACE_Mode::Primary_Intercept ? nav_sol :
+                if mode == PACE_Mode::Alternate_Coast ? coast_sol :
+                0 [deg]; // Default/Neutral for Search or Emergency
         }
         
+        // Connect the result of the arbitration to the physical plant
         connect arbitration.final_servo_cmd to plant.servo_cmd;
     }
 }
