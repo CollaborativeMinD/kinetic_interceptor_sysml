@@ -19,6 +19,17 @@ Critical safety features include **Brownout Protection**, which throttles propul
 * **Predictive "Blind" Guidance:** Utilizes an Extended Kalman Filter (EKF) to estimate target acceleration (`az_Accel`), allowing the drone to continue a curved intercept path during temporary sensor blindness.
 * **Safety Critical Isolation:** Distinct logic gates for Flight Termination Systems (FTS) based on battery criticality (<18V) or Geofence breaches.
 
+## Usage
+This architecture is written in SysML v2 Textual Notation. To compile and verify:
+
+Install the Jupyter SysML v2 Kernel.
+
+Load src/architecture.sysml.
+
+Run the static analyzer to verify port bindings and type consistency.
+
+Architected by Charles Austin II, Principal Solutions Architect.
+
 ## State Transition Logic (PACE)
 
 ```mermaid
